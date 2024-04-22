@@ -35,14 +35,11 @@ def step_gradient(b: float, w: float, data: np.array, alpha: float):
     bias_derivative = 0
     weight_derivative = 0
     for x in data:
-        bias_derivative += current_function(x[0]) - x[1]
-        weight_derivative += x[0] * (current_function(x[0]) - x[1])
+        bias_derivative += 2 * (current_function(x[0]) - x[1])
+        weight_derivative += 2 * x[0] * (current_function(x[0]) - x[1])
 
-    bias_derivative /= data.size
-    weight_derivative *= (2 / data.size)
-
-    new_bias = b - alpha * bias_derivative
-    new_weight = w - alpha * weight_derivative
+    new_bias = b - alpha * bias_derivative / data.size
+    new_weight = w - alpha * weight_derivative / data.size
 
     return new_bias, new_weight
 
