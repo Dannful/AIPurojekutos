@@ -5,10 +5,10 @@ Vinicius Daniel Spadotto - 00341554
 
 Exercício 1)
 
-Para os valores do bias e do weight, foram escolhidos 0 e 1, respectivamente, dado que os dados inicialmente visualizados se assemelham à função f(x) = x.\
-A taxa de aprendizagem mostrou-se necessitar ser extremamente baixa, apresentando alta sensibilidade a sutis variações.\
-Após uma quantidade extensiva de testes, observou-se que o alpha produz resultados palpáveis somente no intervalo aproximado de [0.01, 0.02], onde o número específico 0.023 apresentou o menor erro quadrático médio.\
-Nesse contexto, obteve-se um erro quadrático médio aproximado de 3,237 com 1000 iterações, mudando apenas a quarta casa decimal em diante ao aumentar mais a quantidade de iterações.
+    Para os valores do bias e do weight, foram escolhidos 0 e 1, respectivamente, dado que os dados inicialmente visualizados se assemelham à função f(x) = x.\
+    A taxa de aprendizagem mostrou-se necessitar ser extremamente baixa, apresentando alta sensibilidade a sutis variações.\
+    Após uma quantidade extensiva de testes, observou-se que o alpha produz resultados palpáveis somente no intervalo aproximado de [0.01, 0.02], onde o número específico 0.023 apresentou o menor erro quadrático médio.\
+    Nesse contexto, obteve-se um erro quadrático médio aproximado de 3,237 com 1000 iterações, mudando apenas a quarta casa decimal em diante ao aumentar mais a quantidade de iterações.
 
 Exercício 2)
 
