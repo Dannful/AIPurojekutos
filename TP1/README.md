@@ -1,7 +1,7 @@
 Matrículas:\
 Guilherme Ismael Flach - 00342108\
 Tiago Lucas Flach - 00275896\
-Vinicius Daniel Spadotto - 00341554\
+Vinicius Daniel Spadotto - 00341554
 
 Exercício 1)
 
