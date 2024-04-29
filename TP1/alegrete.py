@@ -15,7 +15,7 @@ def compute_mse(b: float, w: float, data: np.array):
     error = 0
     for x in data:
         error += (predicted_function(x[0]) - x[1])**2
-    error /= data.size
+    error /= len(data)
     return error
 
 
@@ -38,8 +38,8 @@ def step_gradient(b: float, w: float, data: np.array, alpha: float):
         bias_derivative += 2 * (current_function(x[0]) - x[1])
         weight_derivative += 2 * x[0] * (current_function(x[0]) - x[1])
 
-    new_bias = b - alpha * bias_derivative / data.size
-    new_weight = w - alpha * weight_derivative / data.size
+    new_bias = b - alpha * bias_derivative / len(data)
+    new_weight = w - alpha * weight_derivative / len(data)
 
     return new_bias, new_weight
 
@@ -60,8 +60,8 @@ def fit(data: np.array, b: float, w: float, alpha: float, num_iterations: int):
     :return: list,list - uma lista com os b e outra com os w obtidos ao longo da execução
     """
 
-    biases = []
-    weights = []
+    biases = [b]
+    weights = [w]
 
     for _ in range(num_iterations):
         b, w = step_gradient(b, w, data, alpha)
