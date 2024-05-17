@@ -44,9 +44,6 @@ class QLearningAgent(ReinforcementAgent):
 
         self.qValues = util.Counter()
       
-    def isExitState(self, state):
-        return "exit" in self.getLegalActions(state)
-
     def getQValue(self, state, action):
         """
           Returns Q(state,action)
@@ -63,14 +60,12 @@ class QLearningAgent(ReinforcementAgent):
           terminal state, you should return a value of 0.0.
         """
         # Terminal state
-        if self.isExitState(state):
+        if len(self.getLegalActions(state)) == 0:
             return 0.0
 
         rewards = util.Counter()
         for action in self.getLegalActions(state):
             rewards[action] = self.getQValue(state, action)
-
-        print(rewards)
 
         return self.getQValue(state, rewards.argMax())
 
@@ -122,13 +117,8 @@ class QLearningAgent(ReinforcementAgent):
           NOTE: You should never call this function,
           it will be called on your behalf
         """
-        rewards = util.Counter()
-        for newAction in self.getLegalActions(nextState):
-            rewards[newAction] = self.getQValue(nextState, newAction)
+        self.qValues[(state, action)] = (1 - self.alpha) * self.getQValue(state, action) + self.alpha * (reward + self.discount * self.getValue(nextState))
 
-        newValue = self.getQValue(nextState, rewards.argMax())
-
-        self.qValues[(state, action)] = (1 - self.alpha) * self.getQValue(state, action) + self.alpha * (reward + self.discount * newValue)
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)
 
@@ -189,15 +179,21 @@ class ApproximateQAgent(PacmanQAgent):
           Should return Q(state,action) = w * featureVector
           where * is the dotProduct operator
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        sum = 0
+        features = self.featExtractor.getFeatures(state, action)
+        for key in features.keys():
+            sum += features[key] * self.weights[key]
+        return sum
 
     def update(self, state, action, nextState, reward):
         """
            Should update your weights based on transition
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        delta = reward + self.discount * self.getValue(nextState) - self.getQValue(state, action)
+        features = self.featExtractor.getFeatures(state, action)
+        for key in features.keys():
+            self.weights[key] += self.alpha * delta * features[key]
+
 
     def final(self, state):
         "Called at the end of each game."
