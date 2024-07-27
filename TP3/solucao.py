@@ -74,11 +74,11 @@ class State:
         return State(self.to_string())
 
 
-estado_final = "12345678_"
+estado_objetivo = "12345678_"
 
 
-def is_final(nodo: Nodo) -> bool:
-    return nodo.estado == estado_final
+def is_objetivo(nodo: Nodo) -> bool:
+    return nodo.estado == estado_objetivo
 
 
 def sucessor(estado: str) -> Set[Tuple[str, str]]:
@@ -163,26 +163,43 @@ def is_solvable(estado: str) -> bool:
     return inversions % 2 == 0
 
 
-def astar(estado: str, func: Callable[[str], int]) -> list[str]:
+def astar(estado: str, heurisica: Callable[[str], int]) -> list[str]:
+    # Como o 8-puzzle e bipartido, podemos testar para ver se o estado
+    # possui solucao preliminarmente, salvando de termos de expandir 10!/2
+    # nodos para exaurir a fronteira.
     if not is_solvable(estado):
-        return []
+        return None # type: ignore
     explorado = set[Nodo]()
     fronteira = list[Tuple[int, Nodo]]()
     fronteira.append((0, Nodo(estado, None, None, 0)))
-    while True:
-        _, v = fronteira.pop()
-        if is_final(v):
+    while fronteira:
+        # escolhe o melhor da fronteira
+        _, v = fronteira.pop(0)
+        
+        # se chegou no estado objetivo
+        if is_objetivo(v):
+            # caminha na arvore reconstruindo os movimentos
             return reconstroi_movimentos(v)
-        if v not in explorado:
+        # senao, explora o estado do nodo v
+        if v not in explorado: # nodos sao considerados iguais se seus estado sao iguais (ver __eq__ em Nodo)
+            # adiciona v aos explorados
             explorado.add(v)
+            # expande v
             novos_nodos = expande(v)
             for nodo in novos_nodos:
-                heapq.heappush(fronteira, (nodo.custo + func(nodo.estado), nodo))
+                # insere na priority queue, usando custo (g) + heurisica (h) para ordenamento (f)
+                heapq.heappush(fronteira, (nodo.custo + heurisica(nodo.estado), nodo))
+    # desnecessario, a validacao de is_solvable garante que nunca sera expandido todos os 
+    # estados alcancaveis sem encontrar uma solucao
+    return None # type: ignore
 
-
+# Retorna a quantidade de pecas em posicoes erradas
 def distancia_hamming(estado: str) -> int:
-    return 1
-
+    dist = 0
+    for i,v in enumerate(estado):
+        if estado_objetivo[i] != v:
+            dist += 1
+    return dist
 
 def astar_hamming(estado: str) -> list[str]:
     """
@@ -195,6 +212,24 @@ def astar_hamming(estado: str) -> list[str]:
     """
     return astar(estado, distancia_hamming)
 
+# Representacao bizarra da array contendo a posicao "desejada" de cada peca
+posicoes_objetivo = {
+    '1': (0,0), '2': (0,1), '3': (0,2), #123
+    '4': (1,0), '5': (1,1), '6': (1,2), #456
+    '7': (2,0), '8': (2,1), '_': (2,2)  #78_
+}
+
+# Retorna a distancia euclidiana entre cada peca e sua posicao desejada
+def distancia_manhattan(estado: str) -> int:
+    dist = 0
+    for i,v in enumerate(estado):
+        # Converte o valor de uma posicao na array [0,8] para a posicao
+        # em uma matriz 3x3 [(0,0), (2,2)]
+        p_i = i // 3 # linha
+        p_j = i  % 3 # coluna
+        o_i , o_j = posicoes_objetivo[v] # valores "desejados" de p_i, p_j
+        dist += abs(o_i - p_i) + abs(o_j - p_j)
+    return dist
 
 def astar_manhattan(estado: str) -> list[str]:
     """
@@ -206,7 +241,7 @@ def astar_manhattan(estado: str) -> list[str]:
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+    return astar(estado, distancia_manhattan)
 
 
 # opcional,extra
