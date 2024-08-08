@@ -34,6 +34,7 @@ def utility(state: GameState, player:str) -> float:
 
     loser = state.get_board().check_loser()
 
+
     if player == state.get_board().WHITE:
         return 3 if loser == state.get_board().BLACK else -3
     elif player == state.get_board().BLACK:
