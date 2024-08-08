@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<othello-match>
+	<timing start="Wed Aug  7 23:51:09 2024" finish="Wed Aug  7 23:51:11 2024"/>
+	<player directory="advsearch\randomplayer" color="B" result="win" score="1"/>
+	<player directory="advsearch\randomplayer" color="W" result="loss" score="-1"/>
+	<moves>
+		<move coord="1,1" color="B"/>
+		<move coord="1,0" color="W"/>
+		<move coord="0,1" color="B"/>
+		<move coord="1,2" color="W"/>
+		<move coord="2,0" color="B"/>
+		<move coord="0,2" color="W"/>
+		<move coord="0,0" color="B"/>
+		<move coord="2,2" color="W"/>
+	</moves>
+</othello-match>
