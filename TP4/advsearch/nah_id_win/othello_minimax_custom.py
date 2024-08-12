@@ -23,6 +23,11 @@ def make_move(state) -> Tuple[int, int]:
     # Remova-o e coloque uma chamada para o minimax_move (que vc implementara' no modulo minimax).
     # A chamada a minimax_move deve receber sua funcao evaluate como parametro.
 
+    free_spaces = state.board.num_pieces('.')
+    if free_spaces < 10:
+        return minimax_move(state, 5, evaluate_custom)
+    if free_spaces < 20:
+        return minimax_move(state, 4, evaluate_custom)
     return minimax_move(state, 3, evaluate_custom)
 
 def coin_parity(state, player):
@@ -114,6 +119,28 @@ def potential_mobility(state, player):
                 player_potential += count_potential(board, i, j)
     return 100 * (player_potential - opponent_potential) / (player_potential + opponent_potential)
 
+def stability(state, player):
+    player_stability = 0
+    opponent_stability = 0
+    opponent = Board.opponent(player)
+    
+    board = str(state.get_board()).split("\n")
+    
+    for i in range(8):
+        for j in range(8):
+            if board[i][j] == player:
+                open_flanks = count_potential(board, i, j)
+                if (open_flanks == 0):
+                    player_stability += 1
+            elif board[i][j] == opponent:
+                open_flanks = count_potential(board, i, j)
+                if (open_flanks == 0):
+                    opponent_stability += 1
+    if (player_stability + opponent_stability) == 0:
+        return 0
+    return 100 * (player_stability - opponent_stability) / (player_stability + opponent_stability)
+
+
 def potential_corners(state, player):
     state_value = 0
     if (state.is_legal_move((0,0))):
@@ -126,9 +153,6 @@ def potential_corners(state, player):
         state_value += 25
     
     return state_value
-
-def stability(state, player):
-    return 0
 
 def evaluate_custom(state, player:str) -> float:
     """
@@ -146,19 +170,24 @@ def evaluate_custom(state, player:str) -> float:
     parity_contrib = 0
     actual_mobility_contrib = 0
     corners_contrib = 0
+    
     # Play on principles during earlygame, think on lategame
     free_spaces = state.board.num_pieces('.')
     if (free_spaces) < 10:
         parity_contrib = coin_parity(state, player)
         actual_mobility_contrib = actual_mobility(state, player)
+        stability_contrib = stability(state, player)
     elif (free_spaces) < 30:
         actual_mobility_contrib = actual_mobility(state, player)
-        static_value_contrib = static_weights(state, player)
+        static_value_contrib = 0.45 * static_weights(state, player)
         potential_mobility_contrib = potential_mobility(state, player)
         corners_contrib = potential_corners(state, player)
+        stability_contrib = stability(state, player)
     else:
         static_value_contrib =  static_weights(state, player)
         potential_mobility_contrib = potential_mobility(state, player)
         corners_contrib = potential_corners(state, player)
+        stability_contrib = 0.5 * stability(state, player)
         
-    return static_value_contrib + parity_contrib + actual_mobility_contrib + potential_mobility_contrib + corners_contrib
+        
+    return static_value_contrib + parity_contrib + actual_mobility_contrib + potential_mobility_contrib + corners_contrib + stability_contrib
