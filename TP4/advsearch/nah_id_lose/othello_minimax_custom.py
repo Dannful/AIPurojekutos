@@ -175,6 +175,7 @@ def evaluate_custom(state, player:str) -> float:
     free_spaces = state.board.num_pieces('.')
     if (free_spaces) < 10:
         parity_contrib = coin_parity(state, player)
+        corners_contrib = potential_corners(state, player)
         actual_mobility_contrib = actual_mobility(state, player)
         stability_contrib = stability(state, player)
     elif (free_spaces) < 30:
